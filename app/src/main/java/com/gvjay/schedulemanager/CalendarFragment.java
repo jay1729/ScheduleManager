@@ -4,11 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.gvjay.schedulemanager.MainView.DayView;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -40,18 +45,8 @@ public class CalendarFragment extends Fragment {
 
         switch (granularity){
             case 0:
-                view = inflater.inflate(R.layout.day_fragment, container, false);
-                TextView dayValue = view.findViewById(R.id.day_value);
-                TextView dateValue = view.findViewById(R.id.date_value);
-
-                DAY_VALUES = container.getResources().getStringArray(R.array.day_values);
-
-                long dayOffset = offset;
-                dayOffset *=86400000;
-                calendar.setTimeInMillis(currentDate.getTime()+dayOffset);
-
-                dayValue.setText(DAY_VALUES[calendar.get(Calendar.DAY_OF_WEEK)-1]);
-                dateValue.setText(calendar.getTime().toString().substring(4,10));
+                DayView dayView = new DayView(container, offset, inflater);
+                view = dayView.getView();
                 break;
 
             default:
