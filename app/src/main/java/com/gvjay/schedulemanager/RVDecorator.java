@@ -8,14 +8,16 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class RVDecorator extends RecyclerView.ItemDecoration {
 
-    private CalendarData.DrawData[] calendarData;
+    private ArrayList<CalendarData.DrawData> calendarData;
     private float elementHeight, elementWidth;
     private static final double EVENT_WIDTH_LEFT = 0.2;
     private static final double EVENT_WIDTH_RIGHT = 0.8;
 
-    public RVDecorator(CalendarData.DrawData[] data){
+    public RVDecorator(ArrayList<CalendarData.DrawData> data){
         calendarData = data;
     }
 
@@ -35,15 +37,15 @@ public class RVDecorator extends RecyclerView.ItemDecoration {
         for(int i=0;i<count;i++){
             View childView = parent.getChildAt(i);
             int adapterPos = parent.getChildAdapterPosition(childView);
-            if(calendarData[adapterPos].events.length > 0){
-                int n = calendarData[adapterPos].events.length;
+            if(calendarData.get(adapterPos).events.size() > 0){
+                int n = calendarData.get(adapterPos).events.size();
                 for(int j=0;j<n;j++){
                     Paint paint = new Paint();
                     paint.setColor(Color.BLUE);
                     c.drawRect((int) (elementWidth*EVENT_WIDTH_LEFT),
-                            (int) (elementHeight*calendarData[adapterPos].events[j].startPointer),
+                            (int) (elementHeight*calendarData.get(adapterPos).events.get(j).startPointer),
                             (int) (elementWidth*EVENT_WIDTH_RIGHT),
-                            (int) (elementHeight*calendarData[adapterPos].events[j].endPointer),
+                            (int) (elementHeight*calendarData.get(adapterPos).events.get(j).endPointer),
                             paint);
                 }
             }

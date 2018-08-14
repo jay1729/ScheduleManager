@@ -3,14 +3,18 @@ package com.gvjay.schedulemanager.MainView;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gvjay.schedulemanager.CalendarData;
 import com.gvjay.schedulemanager.Database.*;
 import com.gvjay.schedulemanager.R;
+import com.gvjay.schedulemanager.RVDecorator;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -23,7 +27,7 @@ public class DayView extends MainFragContent {
     private Calendar calendar;
     private Date currentDate;
     private DayViewAdapter adapter;
-    private ScheduledEvent[] data;
+    private ArrayList<ScheduledEvent> data;
     private EventDBHandler dbHandler;
 
     public DayView(ViewGroup container, int offset, LayoutInflater inflater){
@@ -37,6 +41,13 @@ public class DayView extends MainFragContent {
 
     private void loadData(){
         data = dbHandler.getEventsOnDate(currentDate);
+        int len = data.size();
+        for(int i=0;i<len;i++){
+            Log.i("index", i+"");
+            Log.i("title", data.get(i).title);
+            Log.i("from", data.get(i).fromDate.toString());
+            Log.i("to", data.get(i).toDate.toString());
+        }
     }
 
     @Override
@@ -62,6 +73,8 @@ public class DayView extends MainFragContent {
         loadData();
         adapter = new DayViewAdapter();
         recyclerView.setAdapter(adapter);
+        CalendarData cd = new CalendarData();
+        recyclerView.addItemDecoration(new RVDecorator(cd.convertScheduledEvents(this.data)));
 
         return view;
     }
