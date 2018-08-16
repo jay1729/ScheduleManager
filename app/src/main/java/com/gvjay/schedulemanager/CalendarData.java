@@ -53,6 +53,7 @@ public class CalendarData {
             while(true){
                 double endPosition = ((double) (toDate % DateUtils.HOUR_IN_MILLIS))/((double) DateUtils.HOUR_IN_MILLIS);
                 double startPosition = ((double) (fromDate % DateUtils.HOUR_IN_MILLIS))/((double) DateUtils.HOUR_IN_MILLIS);
+                if(endPosition == 0) endPosition = 1.0;
                 if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
                     endPosition = 1.0;
                 }

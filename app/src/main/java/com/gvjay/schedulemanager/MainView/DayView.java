@@ -99,7 +99,8 @@ public class DayView extends MainFragContent {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-
+            TextView textView = viewHolder.itemView.findViewById(R.id.element_time);
+            textView.setText(i+":00");
         }
 
         @Override
