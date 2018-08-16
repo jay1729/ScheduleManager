@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -14,6 +15,7 @@ import android.widget.TimePicker;
 import com.gvjay.schedulemanager.Database.EventDBHandler;
 import com.gvjay.schedulemanager.Database.ScheduledEvent;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -44,7 +46,7 @@ public class AddEventActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
                 changeDate.setText(String.valueOf(dayOfMonth)+"-"+String.valueOf(monthOfYear)+"-"+String.valueOf(year));
-                eventDate = new Date(DateUtils.getDateInMillis(year, monthOfYear, dayOfMonth, 0, 0, 0));
+                eventDate = new Date(year-1900, monthOfYear, dayOfMonth, 0, 0, 0);
             }
         };
 
@@ -68,11 +70,11 @@ public class AddEventActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         fromTime.setText( selectedHour + ":" + selectedMinute);
-                        fromDate = new Date(myCalendar.get(Calendar.YEAR),
+                        fromDate = new Date(myCalendar.get(Calendar.YEAR)-1900,
                                 myCalendar.get(Calendar.MONTH),
                                 myCalendar.get(Calendar.DAY_OF_MONTH),
                                 selectedHour, selectedMinute, 0);
-
+                        Log.i("from date actual", fromDate.toString());
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
@@ -92,10 +94,11 @@ public class AddEventActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         toTime.setText( selectedHour + ":" + selectedMinute);
-                        toDate = new Date(myCalendar.get(Calendar.YEAR),
+                        toDate = new Date(myCalendar.get(Calendar.YEAR)-1900,
                                 myCalendar.get(Calendar.MONTH),
                                 myCalendar.get(Calendar.DAY_OF_MONTH),
                                 selectedHour, selectedMinute, 0);
+                        Log.i("Actual to date", toDate.toString());
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");

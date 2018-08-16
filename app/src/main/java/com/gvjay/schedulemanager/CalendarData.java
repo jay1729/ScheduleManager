@@ -47,8 +47,8 @@ public class CalendarData {
         int n_events = events.size();
         for(int i=0;i<n_events;i++){
             ScheduledEvent event = events.get(i);
-            long fromDate = event.fromDate.getTime();
-            long toDate = event.toDate.getTime();
+            long fromDate = event.fromDate.getTime() - (event.fromDate.getTimezoneOffset()*60*1000);
+            long toDate = event.toDate.getTime() - (event.toDate.getTimezoneOffset()*60*1000);
             int position = (int) ((fromDate % DateUtils.DAY_IN_MILLIS) / DateUtils.HOUR_IN_MILLIS);
             while(true){
                 double endPosition = ((double) (toDate % DateUtils.HOUR_IN_MILLIS))/((double) DateUtils.HOUR_IN_MILLIS);
@@ -56,9 +56,6 @@ public class CalendarData {
                 if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
                     endPosition = 1.0;
                 }
-                Log.i("pos", position+"");
-                Log.i("start", startPosition+"");
-                Log.i("end", endPosition+"");
                 output.get(position).events.add(new DrawEvent(startPosition, endPosition, event.title));
                 if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
                     fromDate += DateUtils.HOUR_IN_MILLIS - (fromDate % DateUtils.HOUR_IN_MILLIS);

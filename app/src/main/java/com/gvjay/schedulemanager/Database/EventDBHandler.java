@@ -50,12 +50,13 @@ public class EventDBHandler extends SQLiteOpenHelper {
         ArrayList<ScheduledEvent> output = new ArrayList<ScheduledEvent>();
         if(cursor.getCount() == 0) return output;
         while (true){
-            output.add(new ScheduledEvent(cursor.getString(0),
+            output.add(new ScheduledEvent(cursor.getInt(0),
                     cursor.getString(1),
-                    new Date(cursor.getLong(2)),
+                    cursor.getString(2),
                     new Date(cursor.getLong(3)),
                     new Date(cursor.getLong(4)),
-                    cursor.getString(5)));
+                    new Date(cursor.getLong(5)),
+                    cursor.getString(6)));
             if(cursor.isLast()) break;
             cursor.moveToNext();
         }

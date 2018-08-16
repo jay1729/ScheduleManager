@@ -43,9 +43,9 @@ public class RVDecorator extends RecyclerView.ItemDecoration {
                     Paint paint = new Paint();
                     paint.setColor(Color.BLUE);
                     c.drawRect((int) (elementWidth*EVENT_WIDTH_LEFT),
-                            (int) (elementHeight*calendarData.get(adapterPos).events.get(j).startPointer),
+                            (int) (elementHeight*calendarData.get(adapterPos).events.get(j).startPointer) + childView.getTop(),
                             (int) (elementWidth*EVENT_WIDTH_RIGHT),
-                            (int) (elementHeight*calendarData.get(adapterPos).events.get(j).endPointer),
+                            (int) (elementHeight*calendarData.get(adapterPos).events.get(j).endPointer + childView.getTop()),
                             paint);
                 }
             }
