@@ -24,7 +24,6 @@ public class RVDecorator extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-
     }
 
     @Override
@@ -50,5 +49,20 @@ public class RVDecorator extends RecyclerView.ItemDecoration {
                 }
             }
         }
+    }
+
+    public int isEventTouched(float x, float y, int adapterPos, View childView){
+        int len = calendarData.get(adapterPos).events.size();
+
+        for(int i=0;i<len;i++){
+            CalendarData.DrawEvent drawEvent = calendarData.get(adapterPos).events.get(i);
+            if((x > (elementWidth*EVENT_WIDTH_LEFT))
+                    && (x < (elementWidth*EVENT_WIDTH_RIGHT))
+                    && (y > ((elementHeight*drawEvent.startPointer)))
+                    && (y < (elementHeight*drawEvent.endPointer))){
+                return drawEvent.ID;
+            }
+        }
+        return -1;
     }
 }

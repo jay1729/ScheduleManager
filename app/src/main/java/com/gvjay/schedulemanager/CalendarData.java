@@ -19,11 +19,11 @@ public class CalendarData {
             this.events = new ArrayList<DrawEvent>();
         }
 
-        public DrawData(int position, double[] startPointers, double[] endPointers, String[] titles){
+        public DrawData(int position, int[] IDs, double[] startPointers, double[] endPointers, String[] titles){
             this.position = position;
             int len = startPointers.length;
             for(int i=0;i<len;i++){
-                events.add(new DrawEvent(startPointers[i], endPointers[i], titles[i]));
+                events.add(new DrawEvent(IDs[i], startPointers[i], endPointers[i], titles[i]));
             }
         }
     }
@@ -32,8 +32,10 @@ public class CalendarData {
         public double startPointer;
         public double endPointer;
         public String eventTitle;
+        public int ID;
 
-        public DrawEvent(double startPointer, double endPointer, String title){
+        public DrawEvent(int ID, double startPointer, double endPointer, String title){
+            this.ID = ID;
             this.startPointer = startPointer;
             this.endPointer = endPointer;
             this.eventTitle = title;
@@ -57,7 +59,7 @@ public class CalendarData {
                 if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
                     endPosition = 1.0;
                 }
-                output.get(position).events.add(new DrawEvent(startPosition, endPosition, event.title));
+                output.get(position).events.add(new DrawEvent(event.ID, startPosition, endPosition, event.title));
                 if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
                     fromDate += DateUtils.HOUR_IN_MILLIS - (fromDate % DateUtils.HOUR_IN_MILLIS);
                     position++;

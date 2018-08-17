@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.gvjay.schedulemanager.CalendarData;
 import com.gvjay.schedulemanager.Database.*;
+import com.gvjay.schedulemanager.EventDialog.DescriptiveDialog;
 import com.gvjay.schedulemanager.R;
 import com.gvjay.schedulemanager.RVDecorator;
 
@@ -31,8 +32,9 @@ public class DayView extends MainFragContent implements TouchCallBack {
     private DayViewAdapter adapter;
     private ArrayList<ScheduledEvent> data;
     private EventDBHandler dbHandler;
-    private View.OnTouchListener touchListener;
+    private TouchHandler touchListener;
     private RecyclerView recyclerView;
+    private RVDecorator itemDecorator;
 
     public DayView(ViewGroup container, int offset, LayoutInflater inflater){
         this.container = container;
@@ -53,6 +55,16 @@ public class DayView extends MainFragContent implements TouchCallBack {
             Log.i("from", data.get(i).fromDate.toString());
             Log.i("to", data.get(i).toDate.toString());
         }
+    }
+
+    private ScheduledEvent findEventById(int ID){
+        int len = data.size();
+        for(int i=0;i<len;i++){
+            if(data.get(i).ID == ID){
+                return data.get(i);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -79,14 +91,23 @@ public class DayView extends MainFragContent implements TouchCallBack {
         adapter = new DayViewAdapter();
         recyclerView.setAdapter(adapter);
         CalendarData cd = new CalendarData();
-        recyclerView.addItemDecoration(new RVDecorator(cd.convertScheduledEvents(this.data)));
+        itemDecorator = new RVDecorator(cd.convertScheduledEvents(this.data));
+        recyclerView.addItemDecoration(itemDecorator);
+        touchListener.setRecyclerView(recyclerView);
 
         return view;
     }
 
     @Override
-    public void touchCallBack(float x, float y, int action) {
+    public void touchCallBack(float x, float y, int action, int adapterPos) {
         Log.i("Touch Position", x+" "+y);
+        int eventID = itemDecorator.isEventTouched(x, y, adapterPos, recyclerView.getChildAt(adapterPos));
+        if(eventID > 0){
+            ScheduledEvent event = findEventById(eventID);
+            Log.i("Event is", event.fromDate.toString());
+            DescriptiveDialog descriptiveDialog = new DescriptiveDialog(view.getContext(), event);
+            descriptiveDialog.show();
+        }
     }
 
     private class DayViewAdapter extends RecyclerView.Adapter{
@@ -123,5 +144,5 @@ public class DayView extends MainFragContent implements TouchCallBack {
 }
 
 interface TouchCallBack {
-    void touchCallBack(float x, float y, int action);
+    void touchCallBack(float x, float y, int action, int adapterPos);
 }
