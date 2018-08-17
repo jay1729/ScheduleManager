@@ -5,9 +5,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gvjay.schedulemanager.CalendarData;
 import com.gvjay.schedulemanager.Database.*;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DayView extends MainFragContent {
+public class DayView extends MainFragContent implements TouchCallBack {
 
     private View view;
     private int offset;
@@ -29,6 +31,8 @@ public class DayView extends MainFragContent {
     private DayViewAdapter adapter;
     private ArrayList<ScheduledEvent> data;
     private EventDBHandler dbHandler;
+    private View.OnTouchListener touchListener;
+    private RecyclerView recyclerView;
 
     public DayView(ViewGroup container, int offset, LayoutInflater inflater){
         this.container = container;
@@ -37,6 +41,7 @@ public class DayView extends MainFragContent {
         this.calendar = Calendar.getInstance();
         this.currentDate = this.calendar.getTime();
         dbHandler = new EventDBHandler(container.getContext());
+        touchListener = new TouchHandler(this);
     }
 
     private void loadData(){
@@ -65,7 +70,7 @@ public class DayView extends MainFragContent {
         dayValue.setText(DAY_VALUES[calendar.get(Calendar.DAY_OF_WEEK)-1]);
         dateValue.setText(calendar.getTime().toString().substring(4,10));
 
-        RecyclerView recyclerView = view.findViewById(R.id.eventsView);
+        recyclerView = view.findViewById(R.id.eventsView);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
 
@@ -79,7 +84,13 @@ public class DayView extends MainFragContent {
         return view;
     }
 
+    @Override
+    public void touchCallBack(float x, float y, int action) {
+        Log.i("Touch Position", x+" "+y);
+    }
+
     private class DayViewAdapter extends RecyclerView.Adapter{
+
 
         @NonNull
         @Override
@@ -101,6 +112,7 @@ public class DayView extends MainFragContent {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             TextView textView = viewHolder.itemView.findViewById(R.id.element_time);
             textView.setText(i+":00");
+            viewHolder.itemView.setOnTouchListener(touchListener);
         }
 
         @Override
@@ -108,4 +120,8 @@ public class DayView extends MainFragContent {
             return 24;
         }
     }
+}
+
+interface TouchCallBack {
+    void touchCallBack(float x, float y, int action);
 }
