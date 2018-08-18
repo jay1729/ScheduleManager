@@ -41,7 +41,7 @@ public class DeleteEventDialog extends Dialog {
             @Override
             public void onClick(View view) {
                 EventDBHandler dbHandler = new EventDBHandler(view.getContext());
-                int n = dbHandler.deleteById(scheduledEvent.ID);
+                int n = dbHandler.deleteEventById(scheduledEvent.ID);
                 notifyDataChanged.notifyDataChanged();
                 dismiss();
             }

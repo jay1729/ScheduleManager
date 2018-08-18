@@ -37,7 +37,65 @@ public class EventDBHandler extends SQLiteOpenHelper {
         return id;
     }
 
-    public int deleteById(int Id){
+    public int updateAttendanceRecord(AttendanceEvent attendanceEvent){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(AttendanceEvent.COLUMN_ID, attendanceEvent.ID);
+        cv.put(AttendanceEvent.COLUMN_CLASS_NAME, attendanceEvent.className);
+        cv.put(AttendanceEvent.COLUMN_DATE, attendanceEvent.classDate.getTime());
+        cv.put(AttendanceEvent.COLUMN_STATUS, attendanceEvent.status);
+
+        return sqLiteDatabase.update(AttendanceEvent.TABLE_NAME, cv, AttendanceEvent.COLUMN_ID + "=?", new String[]{Integer.toString(attendanceEvent.ID)});
+    }
+
+    public int deleteAttendanceRecordById(int Id){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+        return sqLiteDatabase.delete(AttendanceEvent.TABLE_NAME, AttendanceEvent.COLUMN_ID + "=?", new String[]{Integer.toString(Id)});
+    }
+
+    public int deleteAttendanceRecordsByName(String className){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+        return sqLiteDatabase.delete(AttendanceEvent.TABLE_NAME, AttendanceEvent.COLUMN_CLASS_NAME + "=?", new String[]{className});
+    }
+
+    public long addAttendanceRecord(AttendanceEvent attendanceEvent){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(AttendanceEvent.COLUMN_CLASS_NAME, attendanceEvent.className);
+        cv.put(AttendanceEvent.COLUMN_DATE, attendanceEvent.classDate.getTime());
+        cv.put(AttendanceEvent.COLUMN_STATUS, attendanceEvent.status);
+
+        long id = sqLiteDatabase.insert(AttendanceEvent.TABLE_NAME, null, cv);
+
+        sqLiteDatabase.close();
+
+        return id;
+    }
+
+    public ArrayList<AttendanceEvent> getAttendanceRecordsByName(String className){
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.query(AttendanceEvent.TABLE_NAME,
+                null,
+                AttendanceEvent.COLUMN_CLASS_NAME+"=?",
+                new String[]{className}, null, null, null);
+        ArrayList<AttendanceEvent> output = new ArrayList<AttendanceEvent>();
+        cursor.moveToFirst();
+        while(true){
+            output.add(new AttendanceEvent(cursor.getInt(0), cursor.getString(1), cursor.getLong(2), cursor.getString(3)));
+            if(cursor.isLast()) break;
+            cursor.moveToNext();
+        }
+
+        return output;
+    }
+
+    public int deleteEventById(int Id){
         SQLiteDatabase database = this.getWritableDatabase();
 
         return database.delete(ScheduledEvent.TABLE_NAME, "_id=?", new String[]{Integer.toString(Id)});
@@ -74,11 +132,13 @@ public class EventDBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(ScheduledEvent.CREATE_TABLE);
+        sqLiteDatabase.execSQL(AttendanceEvent.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ScheduledEvent.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+AttendanceEvent.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }
