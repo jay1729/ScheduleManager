@@ -29,6 +29,7 @@ public class EventDBHandler extends SQLiteOpenHelper {
         cv.put(ScheduledEvent.COLUMN_TO_DATE, scheduledEvent.toDate.getTime());
         cv.put(ScheduledEvent.COLUMN_EVENT_DATE, scheduledEvent.eventDate.getTime());
         cv.put(ScheduledEvent.COLUMN_FREQUENCY, scheduledEvent.frequency);
+        cv.put(ScheduledEvent.COLUMN_ATTENDANCE, scheduledEvent.attendance);
 
         long id = database.insert(ScheduledEvent.TABLE_NAME, null, cv);
 
@@ -120,7 +121,8 @@ public class EventDBHandler extends SQLiteOpenHelper {
                     new Date(cursor.getLong(3)),
                     new Date(cursor.getLong(4)),
                     new Date(cursor.getLong(5)),
-                    cursor.getString(6)));
+                    cursor.getString(6),
+                    cursor.getInt(7)));
             if(cursor.isLast()) break;
             cursor.moveToNext();
         }

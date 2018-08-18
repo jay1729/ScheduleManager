@@ -9,5 +9,5 @@
         <item>Friday</item>
         <item>Saturday</item>
     </string-array>
-    <string name="add_event_prompt">Add a new Event!</string>
+    <string name="add_event_prompt">Add a new Class!</string>
 </resources>

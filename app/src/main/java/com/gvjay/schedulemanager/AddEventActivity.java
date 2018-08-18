@@ -111,7 +111,7 @@ public class AddEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EventDBHandler dbHandler = new EventDBHandler(AddEventActivity.this);
-                dbHandler.addEvent(new ScheduledEvent("event", "Wololo", fromDate, toDate, eventDate, "daily"));
+                dbHandler.addEvent(new ScheduledEvent("event", "Wololo", fromDate, toDate, eventDate, "daily", 1));
                 dbHandler.close();
 
                 Intent intent = new Intent(AddEventActivity.this, MainActivity.class);
