@@ -37,6 +37,12 @@ public class EventDBHandler extends SQLiteOpenHelper {
         return id;
     }
 
+    public int deleteById(int Id){
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        return database.delete(ScheduledEvent.TABLE_NAME, "_id=?", new String[]{Integer.toString(Id)});
+    }
+
     public ArrayList<ScheduledEvent> getEventsOnDate(Date currentDate){
         String query = "SELECT * FROM "+ScheduledEvent.TABLE_NAME;
 //                + " WHERE " + ScheduledEvent.COLUMN_FREQUENCY + " = " + ScheduledEvent.FREQUENCY_OPTIONS.DAILY

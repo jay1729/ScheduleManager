@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import com.gvjay.schedulemanager.CalendarData;
 import com.gvjay.schedulemanager.Database.*;
+import com.gvjay.schedulemanager.EventDialog.DeleteEventDialog;
 import com.gvjay.schedulemanager.EventDialog.DescriptiveDialog;
+import com.gvjay.schedulemanager.NotifyDataChanged;
 import com.gvjay.schedulemanager.R;
 import com.gvjay.schedulemanager.RVDecorator;
 
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DayView extends MainFragContent implements TouchCallBack {
+public class DayView extends MainFragContent implements TouchCallBack, NotifyDataChanged {
 
     private View view;
     private int offset;
@@ -105,9 +107,24 @@ public class DayView extends MainFragContent implements TouchCallBack {
         if(eventID > 0){
             ScheduledEvent event = findEventById(eventID);
             Log.i("Event is", event.fromDate.toString());
-            DescriptiveDialog descriptiveDialog = new DescriptiveDialog(view.getContext(), event);
-            descriptiveDialog.show();
+            if(action == TouchHandler.ACTION_CLICK){
+                DescriptiveDialog descriptiveDialog = new DescriptiveDialog(view.getContext(), event);
+                descriptiveDialog.show();
+            }else if(action == TouchHandler.ACTION_LONG_CLICK){
+                DeleteEventDialog eventDialog = new DeleteEventDialog(view.getContext(), event, this);
+                eventDialog.show();
+            }
+
         }
+    }
+
+    @Override
+    public void notifyDataChanged() {
+        loadData();
+        recyclerView.removeItemDecoration(itemDecorator);
+        CalendarData cd = new CalendarData();
+        itemDecorator = new RVDecorator(cd.convertScheduledEvents(this.data));
+        recyclerView.addItemDecoration(itemDecorator);
     }
 
     private class DayViewAdapter extends RecyclerView.Adapter{
