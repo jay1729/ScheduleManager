@@ -197,7 +197,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@+id/add_freq_spinner"
-        app:layout_constraintTop_toBottomOf="@+id/view8" />
+        app:layout_constraintTop_toBottomOf="@+id/view8"
+        android:id="@+id/add_attendance"/>
 
     <View
         android:id="@+id/view9"

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +29,9 @@ public class EventDBHandler extends SQLiteOpenHelper {
         cv.put(ScheduledEvent.COLUMN_FROM_DATE, scheduledEvent.fromDate.getTime());
         cv.put(ScheduledEvent.COLUMN_TO_DATE, scheduledEvent.toDate.getTime());
         cv.put(ScheduledEvent.COLUMN_EVENT_DATE, scheduledEvent.eventDate.getTime());
+        cv.put(ScheduledEvent.COLUMN_CLASS_DAY_OF_WEEK, scheduledEvent.classDayOfWeek);
+        cv.put(ScheduledEvent.COLUMN_CLASS_DAY_OF_MONTH, scheduledEvent.classDayOfMonth);
+        cv.put(ScheduledEvent.COLUMN_CLASS_MONTH, scheduledEvent.classMonth);
         cv.put(ScheduledEvent.COLUMN_FREQUENCY, scheduledEvent.frequency);
         cv.put(ScheduledEvent.COLUMN_ATTENDANCE, scheduledEvent.attendance);
 
@@ -99,7 +103,7 @@ public class EventDBHandler extends SQLiteOpenHelper {
     public int deleteEventById(int Id){
         SQLiteDatabase database = this.getWritableDatabase();
 
-        return database.delete(ScheduledEvent.TABLE_NAME, "_id=?", new String[]{Integer.toString(Id)});
+        return database.delete(ScheduledEvent.TABLE_NAME, ScheduledEvent.COLUMN_ID+"=?", new String[]{Integer.toString(Id)});
     }
 
     public ArrayList<ScheduledEvent> getEventsOnDate(Date currentDate){
@@ -121,8 +125,34 @@ public class EventDBHandler extends SQLiteOpenHelper {
                     new Date(cursor.getLong(3)),
                     new Date(cursor.getLong(4)),
                     new Date(cursor.getLong(5)),
-                    cursor.getString(6),
-                    cursor.getInt(7)));
+                    cursor.getString(9),
+                    cursor.getInt(10)));
+            if(cursor.isLast()) break;
+            cursor.moveToNext();
+        }
+        database.close();
+        cursor.close();
+        return output;
+    }
+
+    public ArrayList<ScheduledEvent> getAllEvents(){
+        String query = "SELECT * FROM "+ScheduledEvent.TABLE_NAME;
+
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        Cursor cursor = database.rawQuery(query, null);
+        cursor.moveToFirst();
+        ArrayList<ScheduledEvent> output = new ArrayList<ScheduledEvent>();
+        if(cursor.getCount() == 0) return output;
+        while (true){
+            output.add(new ScheduledEvent(cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    new Date(cursor.getLong(3)),
+                    new Date(cursor.getLong(4)),
+                    new Date(cursor.getLong(5)),
+                    cursor.getString(9),
+                    cursor.getInt(10)));
             if(cursor.isLast()) break;
             cursor.moveToNext();
         }

@@ -10,4 +10,6 @@
         <item>Saturday</item>
     </string-array>
     <string name="add_event_prompt">Add a new Class!</string>
+    <string name="time_clash_message">This class would clash with</string>
+    <string name="time_clash_title">Cannot add this class!</string>
 </resources>
