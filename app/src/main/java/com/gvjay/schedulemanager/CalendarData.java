@@ -56,11 +56,11 @@ public class CalendarData {
                 double endPosition = ((double) (toDate % DateUtils.HOUR_IN_MILLIS))/((double) DateUtils.HOUR_IN_MILLIS);
                 double startPosition = ((double) (fromDate % DateUtils.HOUR_IN_MILLIS))/((double) DateUtils.HOUR_IN_MILLIS);
                 if(endPosition == 0) endPosition = 1.0;
-                if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
+                if(((toDate - (toDate % DateUtils.HOUR_IN_MILLIS)) - (fromDate - (fromDate % DateUtils.HOUR_IN_MILLIS))) >= DateUtils.HOUR_IN_MILLIS){
                     endPosition = 1.0;
                 }
                 output.get(position).events.add(new DrawEvent(event.ID, startPosition, endPosition, event.title));
-                if((toDate - fromDate) > DateUtils.HOUR_IN_MILLIS){
+                if(((toDate - (toDate % DateUtils.HOUR_IN_MILLIS)) - (fromDate - (fromDate % DateUtils.HOUR_IN_MILLIS))) >= DateUtils.HOUR_IN_MILLIS){
                     fromDate += DateUtils.HOUR_IN_MILLIS - (fromDate % DateUtils.HOUR_IN_MILLIS);
                     position++;
                     continue;

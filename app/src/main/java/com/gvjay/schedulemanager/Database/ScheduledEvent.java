@@ -142,7 +142,7 @@ public class ScheduledEvent {
                         break;
                     }
                 }else if(currentEvent.frequency.equals(FREQUENCY_OPTIONS.MONTHLY[1]) || scheduledEvent.frequency.equals(FREQUENCY_OPTIONS.MONTHLY[1])){
-                    if(DateUtils.doTimesClash(currentEvent.fromDate, currentEvent.toDate, currentEvent.classDayOfMonth, scheduledEvent.fromDate, scheduledEvent.toDate, currentEvent.classDayOfMonth)){
+                    if(DateUtils.doTimesClash(currentEvent.fromDate, currentEvent.toDate, currentEvent.classDayOfMonth, scheduledEvent.fromDate, scheduledEvent.toDate, scheduledEvent.classDayOfMonth)){
                         blockingEvent = currentEvent;
                         break;
                     }
