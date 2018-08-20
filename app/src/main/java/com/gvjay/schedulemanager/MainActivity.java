@@ -8,10 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+
+import com.gvjay.schedulemanager.Database.EventDBHandler;
+import com.gvjay.schedulemanager.Database.ScheduledEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,6 +43,24 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(calendar.getTimeInMillis()+ DateUtils.DAY_IN_MILLIS);
+
+        EventDBHandler dbHandler = new EventDBHandler(this);
+        CalendarData cd = new CalendarData();
+        ArrayList<CalendarData.DrawData> data = cd.convertScheduledEvents(dbHandler.getEventsOnDate(calendar.getTime()));
+
+        int len = data.size();
+        for(int i=0;i<len;i++){
+            if(data.get(i).events.size()>0){
+                Log.i("id", data.get(i).events.get(0).ID+"");
+                Log.i("frequency", data.get(i).events.get(0).startPointer+"");
+                Log.i("from", data.get(i).events.get(0).endPointer+"");
+                Log.i("to", data.get(i).events.get(0).eventTitle);
+            }
+
+        }
 
     }
 

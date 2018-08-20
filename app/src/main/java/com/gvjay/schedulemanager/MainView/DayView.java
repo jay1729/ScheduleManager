@@ -3,6 +3,7 @@ package com.gvjay.schedulemanager.MainView;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -43,6 +44,9 @@ public class DayView extends MainFragContent implements TouchCallBack, NotifyDat
         this.offset = offset;
         this.inflater = inflater;
         this.calendar = Calendar.getInstance();
+        long offsetDays = offset;
+        offsetDays *= DateUtils.DAY_IN_MILLIS;
+        this.calendar.setTimeInMillis(this.calendar.getTimeInMillis()+offsetDays);
         this.currentDate = this.calendar.getTime();
         dbHandler = new EventDBHandler(container.getContext());
         touchListener = new TouchHandler(this);
@@ -52,10 +56,11 @@ public class DayView extends MainFragContent implements TouchCallBack, NotifyDat
         data = dbHandler.getEventsOnDate(currentDate);
         int len = data.size();
         for(int i=0;i<len;i++){
-            Log.i("index", i+"");
-            Log.i("title", data.get(i).title);
+            Log.i("id", data.get(i).ID+"");
+            Log.i("frequency", data.get(i).frequency);
             Log.i("from", data.get(i).fromDate.toString());
             Log.i("to", data.get(i).toDate.toString());
+            Log.i("day", data.get(i).classDayOfWeek + "");
         }
     }
 
@@ -76,10 +81,6 @@ public class DayView extends MainFragContent implements TouchCallBack, NotifyDat
         TextView dateValue = view.findViewById(R.id.date_value);
 
         String[] DAY_VALUES = container.getResources().getStringArray(R.array.day_values);
-
-        long dayOffset = offset;
-        dayOffset *=86400000;
-        calendar.setTimeInMillis(currentDate.getTime()+dayOffset);
 
         dayValue.setText(DAY_VALUES[calendar.get(Calendar.DAY_OF_WEEK)-1]);
         dateValue.setText(calendar.getTime().toString().substring(4,10));

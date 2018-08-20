@@ -1,5 +1,7 @@
 package com.gvjay.schedulemanager;
 
+import android.util.Log;
+
 import java.util.Date;
 
 public class DateUtils {
@@ -31,7 +33,10 @@ public class DateUtils {
     }
 
     public static boolean doTimesClash(Date fromDate1, Date toDate1, int dayOfWeek1, Date fromDate2, Date toDate2, int dayOfWeek2){
-        if((dayOfWeek1 == dayOfWeek2) && doTimesClash(fromDate1, toDate1, fromDate2, toDate2)) return true;
+        if((dayOfWeek1 == dayOfWeek2) && doTimesClash(fromDate1, toDate1, fromDate2, toDate2)){
+            Log.i("Attention", dayOfWeek1+" "+dayOfWeek2);
+            return true;
+        }
         return false;
     }
 

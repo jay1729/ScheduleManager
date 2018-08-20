@@ -1,6 +1,7 @@
 package com.gvjay.schedulemanager.Database;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.gvjay.schedulemanager.DateUtils;
 import com.gvjay.schedulemanager.R;
@@ -20,6 +21,7 @@ public class ScheduledEvent {
     public int classDayOfWeek;
     public int classDayOfMonth;
     public int classMonth;
+    public int classYear;
 
     public static String TABLE_NAME = "scheduled_event";
 
@@ -32,6 +34,7 @@ public class ScheduledEvent {
     public static String COLUMN_CLASS_DAY_OF_WEEK = "class_day";
     public static String COLUMN_CLASS_DAY_OF_MONTH = "class_day_of_month";
     public static String COLUMN_CLASS_MONTH = "class_month";
+    public static String COLUMN_CLASS_YEAR = "class_year";
     public static String COLUMN_FREQUENCY = "frequency";
     public static String COLUMN_ATTENDANCE = "attendance";
 
@@ -56,7 +59,7 @@ public class ScheduledEvent {
         public static String findValueByName(String name){
             ArrayList<String[]> temp = getAllOptions();
             int len = temp.size();
-            for(int i=0;i<len;i++) if(temp.get(i)[0] == name) return temp.get(i)[1];
+            for(int i=0;i<len;i++) if(temp.get(i)[0].equals(name)) return temp.get(i)[1];
             return null;
         }
     }
@@ -71,6 +74,7 @@ public class ScheduledEvent {
             + COLUMN_CLASS_DAY_OF_WEEK + " INTEGER,"
             + COLUMN_CLASS_DAY_OF_MONTH + " INTEGER,"
             + COLUMN_CLASS_MONTH + " INTEGER,"
+            + COLUMN_CLASS_YEAR + " INTEGER,"
             + COLUMN_FREQUENCY + " TEXT,"
             + COLUMN_ATTENDANCE + " INTEGER"
             +")";
@@ -88,6 +92,7 @@ public class ScheduledEvent {
         this.classDayOfWeek = eventDate.getDay();
         this.classDayOfMonth = eventDate.getDate();
         this.classMonth = eventDate.getMonth();
+        this.classYear = eventDate.getYear()+1900;
     }
 
     public ScheduledEvent(String type, String title, Date fromDate, Date toDate, Date eventDate, String frequency, int attendance){
@@ -102,6 +107,7 @@ public class ScheduledEvent {
         this.classDayOfWeek = eventDate.getDay();
         this.classDayOfMonth = eventDate.getDate();
         this.classMonth = eventDate.getMonth();
+        this.classYear = eventDate.getYear()+1900;
     }
 
     public static class Utils {
@@ -130,7 +136,8 @@ public class ScheduledEvent {
                         break;
                     }
                 }else if(currentEvent.frequency.equals(FREQUENCY_OPTIONS.WEEKLY[1]) || scheduledEvent.frequency.equals(FREQUENCY_OPTIONS.WEEKLY[1])){
-                    if(DateUtils.doTimesClash(currentEvent.fromDate, currentEvent.toDate, currentEvent.classDayOfWeek, scheduledEvent.fromDate, scheduledEvent.toDate, currentEvent.classDayOfWeek)){
+                    Log.i("it is weekly", "weekly it is "+currentEvent.classDayOfWeek+" "+scheduledEvent.classDayOfWeek);
+                    if(DateUtils.doTimesClash(currentEvent.fromDate, currentEvent.toDate, currentEvent.classDayOfWeek, scheduledEvent.fromDate, scheduledEvent.toDate, scheduledEvent.classDayOfWeek)){
                         blockingEvent = currentEvent;
                         break;
                     }

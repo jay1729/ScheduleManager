@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.ArrayAdapter;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +20,18 @@ public class EventDBHandler extends SQLiteOpenHelper {
     }
 
     public long addEvent(ScheduledEvent scheduledEvent){
+
+        Log.i("test db", scheduledEvent.classDayOfWeek+"");
+
+        if(scheduledEvent.frequency.equals(ScheduledEvent.FREQUENCY_OPTIONS.DAILY[1])){
+            scheduledEvent.frequency = ScheduledEvent.FREQUENCY_OPTIONS.WEEKLY[1];
+            for(int i=0;i<7;i++){
+                scheduledEvent.classDayOfWeek = scheduledEvent.classDayOfWeek + 1;
+                if(scheduledEvent.classDayOfWeek > 6) scheduledEvent.classDayOfWeek = 0;
+                addEvent(scheduledEvent);
+            }
+            return 0;
+        }
         SQLiteDatabase database = this.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -32,6 +44,7 @@ public class EventDBHandler extends SQLiteOpenHelper {
         cv.put(ScheduledEvent.COLUMN_CLASS_DAY_OF_WEEK, scheduledEvent.classDayOfWeek);
         cv.put(ScheduledEvent.COLUMN_CLASS_DAY_OF_MONTH, scheduledEvent.classDayOfMonth);
         cv.put(ScheduledEvent.COLUMN_CLASS_MONTH, scheduledEvent.classMonth);
+        cv.put(ScheduledEvent.COLUMN_CLASS_YEAR, scheduledEvent.classYear);
         cv.put(ScheduledEvent.COLUMN_FREQUENCY, scheduledEvent.frequency);
         cv.put(ScheduledEvent.COLUMN_ATTENDANCE, scheduledEvent.attendance);
 
@@ -106,32 +119,68 @@ public class EventDBHandler extends SQLiteOpenHelper {
         return database.delete(ScheduledEvent.TABLE_NAME, ScheduledEvent.COLUMN_ID+"=?", new String[]{Integer.toString(Id)});
     }
 
-    public ArrayList<ScheduledEvent> getEventsOnDate(Date currentDate){
-        String query = "SELECT * FROM "+ScheduledEvent.TABLE_NAME;
-//                + " WHERE " + ScheduledEvent.COLUMN_FREQUENCY + " = " + ScheduledEvent.FREQUENCY_OPTIONS.DAILY
- //               + " OR " + "(" + ScheduledEvent.COLUMN_FREQUENCY + " = " + ScheduledEvent.FREQUENCY_OPTIONS.ONE_TIME + " AND " + ScheduledEvent.COLUMN_EVENT_DATE
-   //             + " = " + currentDate.getTime() + ")";
-
+    public int deleteEventByName(String className){
         SQLiteDatabase database = this.getWritableDatabase();
 
-        Cursor cursor = database.rawQuery(query, null);
+        return database.delete(ScheduledEvent.TABLE_NAME, ScheduledEvent.COLUMN_TITLE+"=?", new String[]{className});
+    }
+
+    private static ScheduledEvent getScheduledEventFromCursor(Cursor cursor){
+        return new ScheduledEvent(cursor.getInt(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                new Date(cursor.getLong(3)),
+                new Date(cursor.getLong(4)),
+                new Date(cursor.getLong(5)),
+                cursor.getString(10),
+                cursor.getInt(11));
+    }
+
+    private static void feedDataIntoArrayList(Cursor cursor, ArrayList<ScheduledEvent> list){
         cursor.moveToFirst();
-        ArrayList<ScheduledEvent> output = new ArrayList<ScheduledEvent>();
-        if(cursor.getCount() == 0) return output;
+        if(cursor.getCount() == 0) return;
         while (true){
-            output.add(new ScheduledEvent(cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    new Date(cursor.getLong(3)),
-                    new Date(cursor.getLong(4)),
-                    new Date(cursor.getLong(5)),
-                    cursor.getString(9),
-                    cursor.getInt(10)));
+            list.add(getScheduledEventFromCursor(cursor));
             if(cursor.isLast()) break;
             cursor.moveToNext();
         }
-        database.close();
         cursor.close();
+    }
+
+    public ArrayList<ScheduledEvent> getEventsOnDate(Date currentDate){
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        Log.i("GetEventsCalled", currentDate.getDay()+"");
+
+        ArrayList<ScheduledEvent> output = new ArrayList<ScheduledEvent>();
+
+        Cursor cursor = database.query(ScheduledEvent.TABLE_NAME, null,
+                ScheduledEvent.COLUMN_FREQUENCY + "=?"+" AND " + ScheduledEvent.COLUMN_CLASS_DAY_OF_WEEK + "=?",
+                new String[]{ScheduledEvent.FREQUENCY_OPTIONS.WEEKLY[1], Integer.toString(currentDate.getDay())},
+                null, null, null);
+        feedDataIntoArrayList(cursor, output);
+
+        cursor = database.query(ScheduledEvent.TABLE_NAME, null,
+                ScheduledEvent.COLUMN_FREQUENCY + "=?" + " AND " + ScheduledEvent.COLUMN_CLASS_DAY_OF_MONTH + "=?",
+                new String[]{ScheduledEvent.FREQUENCY_OPTIONS.MONTHLY[1], Integer.toString(currentDate.getDate())},
+                null, null, null);
+        feedDataIntoArrayList(cursor, output);
+
+        cursor = database.query(ScheduledEvent.TABLE_NAME, null,
+                ScheduledEvent.COLUMN_FREQUENCY + "=?" + " AND " + ScheduledEvent.COLUMN_CLASS_DAY_OF_WEEK + "=?" +" AND "
+                        + ScheduledEvent.COLUMN_CLASS_DAY_OF_MONTH + "=?",
+                new String[]{ScheduledEvent.FREQUENCY_OPTIONS.YEARLY[1], Integer.toString(currentDate.getDay()), Integer.toString(currentDate.getDate())},
+                null, null, null);
+        feedDataIntoArrayList(cursor, output);
+
+        cursor = database.query(ScheduledEvent.TABLE_NAME, null,
+                ScheduledEvent.COLUMN_FREQUENCY + "=?" + " AND " + ScheduledEvent.COLUMN_CLASS_DAY_OF_WEEK + "=?" +" AND "
+                        + ScheduledEvent.COLUMN_CLASS_DAY_OF_MONTH + "=?" + " AND " + ScheduledEvent.COLUMN_CLASS_YEAR + "=?",
+                new String[]{ScheduledEvent.FREQUENCY_OPTIONS.YEARLY[1], Integer.toString(currentDate.getDay()), Integer.toString(currentDate.getDate()),
+                        (currentDate.getYear()+1900) + ""},
+                null, null, null);
+        feedDataIntoArrayList(cursor, output);
+        database.close();
         return output;
     }
 
@@ -145,14 +194,7 @@ public class EventDBHandler extends SQLiteOpenHelper {
         ArrayList<ScheduledEvent> output = new ArrayList<ScheduledEvent>();
         if(cursor.getCount() == 0) return output;
         while (true){
-            output.add(new ScheduledEvent(cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    new Date(cursor.getLong(3)),
-                    new Date(cursor.getLong(4)),
-                    new Date(cursor.getLong(5)),
-                    cursor.getString(9),
-                    cursor.getInt(10)));
+            output.add(getScheduledEventFromCursor(cursor));
             if(cursor.isLast()) break;
             cursor.moveToNext();
         }

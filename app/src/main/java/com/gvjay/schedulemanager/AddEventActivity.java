@@ -43,6 +43,7 @@ public class AddEventActivity extends AppCompatActivity {
     CheckBox attendanceBox;
     EditText classNameET;
 
+    String className = "Default";
     Date fromDate = myCalendar.getTime();
     Date toDate = myCalendar.getTime();
     Date eventDate = myCalendar.getTime();
@@ -57,7 +58,7 @@ public class AddEventActivity extends AppCompatActivity {
         classNameET = findViewById(R.id.editText);
 
         changeDate = findViewById(R.id.set_date);
-        changeDate.setText(eventDate.getDate()+"-"+eventDate.getMonth()+"-"+eventDate.getYear());
+        changeDate.setText(eventDate.getDate()+"-"+(eventDate.getMonth()+1)+"-"+(eventDate.getYear()+1900));
 
         fromTime = findViewById(R.id.from_time);
         fromTime.setText(fromDate.getHours()+":"+fromDate.getMinutes());
@@ -67,10 +68,10 @@ public class AddEventActivity extends AppCompatActivity {
 
         frequencySpinner = findViewById(R.id.add_freq_spinner);
 
-        ArrayList<String[]> temp = ScheduledEvent.FREQUENCY_OPTIONS.getAllOptions();
-        int len = temp.size();
+        final ArrayList<String[]> frequencyOptions = ScheduledEvent.FREQUENCY_OPTIONS.getAllOptions();
+        int len = frequencyOptions.size();
         String[] items = new String[len];
-        for(int i=0;i<len;i++) items[i] = temp.get(i)[0];
+        for(int i=0;i<len;i++) items[i] = frequencyOptions.get(i)[0];
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, items);
 
         frequencySpinner.setAdapter(arrayAdapter);
@@ -101,7 +102,7 @@ public class AddEventActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.i("text", editable.toString());
+                className = editable.toString();
             }
         });
 
@@ -118,8 +119,8 @@ public class AddEventActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
-                int minute = myCalendar.get(Calendar.MINUTE);
+                int hour = fromDate.getHours();
+                int minute = fromDate.getMinutes();
                 TimePickerDialog mTimePicker;
                 mTimePicker = new TimePickerDialog(AddEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -142,8 +143,8 @@ public class AddEventActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
-                int minute = myCalendar.get(Calendar.MINUTE);
+                int hour = toDate.getHours();
+                int minute = toDate.getMinutes();
                 TimePickerDialog mTimePicker;
                 mTimePicker = new TimePickerDialog(AddEventActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -165,7 +166,7 @@ public class AddEventActivity extends AppCompatActivity {
         frequencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("Item Selected", i + " " + l);
+                frequency = frequencyOptions.get(i)[1];
             }
 
             @Override
@@ -185,7 +186,7 @@ public class AddEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EventDBHandler dbHandler = new EventDBHandler(AddEventActivity.this);
-                ScheduledEvent scheduledEvent = new ScheduledEvent("class", "Wololo", fromDate, toDate, eventDate, ScheduledEvent.FREQUENCY_OPTIONS.DAILY[1], 1);
+                ScheduledEvent scheduledEvent = new ScheduledEvent("class", className, fromDate, toDate, eventDate, frequency, attendance);
                 if(checkObjection(view.getContext(), scheduledEvent)){
                     Log.i("Objection", "Objection");
                     return;
@@ -206,6 +207,9 @@ public class AddEventActivity extends AppCompatActivity {
             new AlertDialog.Builder(context).setTitle(context.getString(R.string.time_clash_title))
                     .setMessage(context.getString(R.string.time_clash_message)+" "+blockingEvent.title)
                     .create().show();
+            Log.i("f block", blockingEvent.frequency);
+            Log.i("day block", blockingEvent.classDayOfWeek+"");
+            Log.i("Event day is", scheduledEvent.classDayOfWeek+"");
             return true;
         }
         return false;
